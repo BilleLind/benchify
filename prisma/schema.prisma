@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("PRISMA_DB_URL")
+}
+
+
+model Product {
+  id Int @id @default(autoincrement())
+  titel String @db.VarChar(255)
+  description String //unlimited text
+  price Int
+  category Category? @relation(fields: [categoryTitel], references: [titel])
+  categoryTitel String?
+  tags Tags[] //implicit Many to Many relationship
+  featureImage String //url
+}
+model Category {
+  titel String @db.VarChar(255) @unique @id
+  products Product[]
+}
+
+model Tags {
+  titel String @db.VarChar(255) @unique @id
+  tags Product[] 
+}
+
+// possible additional models => ProductImages, ProductSpecs (specification, measurements, visual materials eg. images and/or videos)
