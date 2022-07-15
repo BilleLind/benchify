@@ -1,8 +1,8 @@
-import { build } from './app.js'
+import build from './app'
 
 const server = build({
-	logger: {
-		transport:
+  logger: {
+    transport:
 			process.env.NODE_ENV === 'development'
 				? {
 						target: 'pino-pretty',
@@ -12,12 +12,12 @@ const server = build({
 						},
 				  }
 				: undefined,
-	},
+  }
 })
 
-server.listen({ port: process.env.PORT || 3000, host: '0.0.0.0'}, (err, address) => {
-	if (err) {
-		server.log.error(err)
-		process.exit(1)
-	}
+server.listen({port: 3000, host: "0.0.0.0"}, (err, address)=> {
+  if(err) {
+    server.log.error(err)
+    process.exit(1)
+  }
 })
