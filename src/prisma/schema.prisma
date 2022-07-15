@@ -9,13 +9,13 @@ datasource db {
 
 model Product {
   id           Int       @id @default(autoincrement())
-  title        String    @db.VarChar(255)
-  description  String //unlimited text
+  titel        String    @db.VarChar(255)
+  description  String
   price        Int
-  categoryRef  Category? @relation(fields: [category], references: [titel])
+  featureImage String
   category     String?
-  tags         Tags[] //implicit Many to Many relationship
-  featureImage String //url
+  categoryRef  Category? @relation(fields: [category], references: [titel])
+  tags         Tags[]
 }
 
 model Category {
@@ -27,5 +27,3 @@ model Tags {
   titel String    @id @unique @db.VarChar(255)
   tags  Product[]
 }
-
-// possible additional models => ProductImages, ProductSpecs (specification, measurements, visual materials eg. images and/or videos)

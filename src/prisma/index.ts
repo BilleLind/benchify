@@ -1,5 +1,4 @@
-
-import { PrismaClient } from('@prisma/client')
+import { PrismaClient } from '@prisma/client'
 
 export default async function prisma(fastify, opts) {
 	const prisma = new PrismaClient()
@@ -20,6 +19,7 @@ export default async function prisma(fastify, opts) {
 				take: { type: 'integer', default: 10 },
 			},
 			handler: async (request, response) => {
+				const {current, take} = request.params
         // validate that the current and take can't fetch more than there are 
 				const products = await prisma.product.findMany({
 					skip: current,
@@ -39,12 +39,12 @@ export default async function prisma(fastify, opts) {
 			params: {
 				type: 'object',
 				properties: {
-					id: number
+					id: {type: 'number'}
 				}
 			}
 		},
 		handler: async (request, response) =>{
-			const product = await prisma.prisma.findUnique(request.params.id)
+			const product = await prisma.product.findUnique(request.params.id)
 			response.send(product)
 		}
   })
@@ -68,7 +68,7 @@ export default async function prisma(fastify, opts) {
 	const productSchema = {
 		type: 'object',
 		properties: {
-			id: number,
+			id: {type: 'number'},
 			title: {type: 'string'},
 			description: {type: 'string'},
 			price: {type: 'integer'},
