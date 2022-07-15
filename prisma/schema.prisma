@@ -4,28 +4,28 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("PRISMA_DB_URL")
+  url      = env("PRISMA_DB_URL")
 }
-
 
 model Product {
-  id Int @id @default(autoincrement())
-  titel String @db.VarChar(255)
-  description String //unlimited text
-  price Int
-  category Category? @relation(fields: [categoryTitel], references: [titel])
-  categoryTitel String?
-  tags Tags[] //implicit Many to Many relationship
+  id           Int       @id @default(autoincrement())
+  title        String    @db.VarChar(255)
+  description  String //unlimited text
+  price        Int
+  categoryRef  Category? @relation(fields: [category], references: [titel])
+  category     String?
+  tags         Tags[] //implicit Many to Many relationship
   featureImage String //url
 }
+
 model Category {
-  titel String @db.VarChar(255) @unique @id
+  titel    String    @id @unique @db.VarChar(255)
   products Product[]
 }
 
 model Tags {
-  titel String @db.VarChar(255) @unique @id
-  tags Product[] 
+  titel String    @id @unique @db.VarChar(255)
+  tags  Product[]
 }
 
 // possible additional models => ProductImages, ProductSpecs (specification, measurements, visual materials eg. images and/or videos)
