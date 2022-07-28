@@ -1,4 +1,7 @@
 import build from './app'
+import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
+import {FastifyInstance} from 'fastify'
+import { Server, IncomingMessage, ServerResponse } from 'http';
 
 const server = build({
   logger: {
@@ -13,9 +16,9 @@ const server = build({
 				  }
 				: undefined,
   }
-})
+}).withTypeProvider<JsonSchemaToTsProvider>()
 
-server.listen({port: 3000, host: "0.0.0.0"}, (err, address)=> {
+server.listen({port: 3002, host: "0.0.0.0"}, (err, address)=> {
   if(err) {
     server.log.error(err)
     process.exit(1)

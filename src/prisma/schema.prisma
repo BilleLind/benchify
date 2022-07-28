@@ -9,21 +9,21 @@ datasource db {
 
 model Product {
   id           Int       @id @default(autoincrement())
-  titel        String    @db.VarChar(255)
+  title        String    @db.VarChar(255)
   description  String
   price        Int
-  featureImage String
-  category     String?
-  categoryRef  Category? @relation(fields: [category], references: [titel])
+  featureImage String?
+  category     String
+  categoryRef  Category? @relation(fields: [category], references: [title])
   tags         Tags[]
 }
 
 model Category {
-  titel    String    @id @unique @db.VarChar(255)
+  title    String    @id @unique @db.VarChar(255)
   products Product[]
 }
 
 model Tags {
-  titel String    @id @unique @db.VarChar(255)
+  title String    @id @unique @db.VarChar(255)
   tags  Product[]
 }

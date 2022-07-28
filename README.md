@@ -17,6 +17,13 @@
   - titel: string(varChar(255))
   - products[]: ref => tags
 
+ ### Rewrites?
+
+ - perhaps rewrite schema with fluent json schema? for better syntax and just better dx? 
+
+
+
+
  ## benchmarks criteria
   showcase normal queries used in the day to day, eg.
   - get all products

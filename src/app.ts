@@ -1,16 +1,30 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import Fastify from "fastify";
+import * as Fastify from 'fastify'
 
+import {prismaRoutes} from './prisma/index'
 
 function build(opts={}) {
-  const fastify = Fastify(opts)
+  const fastify : Fastify.FastifyInstance = Fastify.fastify(opts)
 
-
-  fastify.get('/', async(request,reply) => {
-    reply.send({route: "root"})
+  
+  fastify.route ({
+    method: 'GET',
+    url: '/',
+    schema: {
+      response: {200:{
+        type: 'object',
+        properties : {
+          route: {type: 'string'}
+        }
+      }
+    }}as const,
+    handler: async (request, reply) =>{
+        reply.send({route: "Root"})
+    }
   })
 
+  fastify.register(prismaRoutes, {prefix: '/prisma'})
 
   return fastify
 }
