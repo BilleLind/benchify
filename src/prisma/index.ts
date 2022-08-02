@@ -44,8 +44,6 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 		async function (request, reply) {
 			try {
 				const products = await prisma.product.findMany()
-				fastify.log.info('sending products')
-				fastify.log.info({ products })
 				reply.status(200).send({ products: products })
 			} catch (error) {
 				reply.status(404).send({ error: 'Error retrieving Products' })
@@ -63,9 +61,7 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 			try {
 				const { id } = request.params
 				var int_id = await parseInt(id)
-				fastify.log.info(id + ' | ' + int_id)
 				const product = await prisma.product.findUnique({ where: { id: int_id }, include: { tags: true } })
-				fastify.log.info(product)
 				reply.code(200).send({ product: product })
 			} catch (error) {
 				reply.code(404).send({ error: 'Product not found' })
