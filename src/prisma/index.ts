@@ -1,7 +1,10 @@
+'use strict'
 import { PrismaClient } from '@prisma/client'
 import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 
 import { ProductReply, productReplySchema, productsReplySchema, ProductsReply, ProductId, specificProductId, Error, errorSchema } from '../schema/product'
+
+import { getProductsSchema, getSpecificProductSchema } from '../schema/product'
 
 export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 	const prisma = new PrismaClient()
@@ -33,23 +36,18 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 	)
 
 	// All Products
-	fastify.get<{ Reply: ProductsReply | Error }>(
+	fastify.get(
 		'/products',
 		{
-			schema: {
-				response: {
-					200: { productsReplySchema },
-					404: {
-						errorSchema,
-					},
-				},
-			},
+			schema: getProductsSchema,
 		},
 		async function (request, reply) {
-			const products = await prisma.product.findMany()
-			if (products) {
-				reply.send({ products })
-			} else {
+			try {
+				const products = await prisma.product.findMany()
+				fastify.log.info('sending products')
+				fastify.log.info({ products })
+				reply.status(200).send({ products: products })
+			} catch (error) {
 				reply.status(404).send({ error: 'Error retrieving Products' })
 			}
 		}
@@ -57,29 +55,20 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 
 	// Get Specific Product via id
 	fastify.get<{ Params: ProductId; Reply: ProductReply | Error }>(
-		'/product/:id',
+		'/products/:id',
 		{
-			schema: {
-				params: {
-					specificProductId,
-				},
-				response: {
-					200: {
-						productReplySchema,
-					},
-					404: {
-						errorSchema,
-					},
-				},
-			},
-		} as const,
+			schema: getSpecificProductSchema
+		},
 		async function (request, reply) {
-			const { id } = request.params
-			const product = await prisma.product.findUnique({ where: { id: id } })
-			if (product) {
-				reply.status(200).send({ product })
-			} else {
-				reply.status(404).send({ error: 'Product not found' })
+			try {
+				const { id } = request.params
+				var int_id = await parseInt(id)
+				fastify.log.info(id + ' | ' + int_id)
+				const product = await prisma.product.findUnique({ where: { id: int_id }, include: { tags: true } })
+				fastify.log.info(product)
+				reply.code(200).send({ product: product })
+			} catch (error) {
+				reply.code(404).send({ error: 'Product not found' })
 			}
 		}
 	)
