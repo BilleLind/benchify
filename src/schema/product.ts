@@ -2,27 +2,6 @@ import type { FastifySchema, RouteShorthandOptions } from 'fastify'
 import { FromSchema } from 'json-schema-to-ts'
 import { type } from 'os'
 
-export const productSchema = {
-	$id: 'product',
-	type: 'object',
-	required: ['title', 'description', 'price', 'category'],
-	properties: {
-		id: { type: 'integer' },
-		title: { type: 'string' },
-		description: { type: 'string' },
-		price: { type: 'integer' },
-		featureImage: { type: 'string' },
-		category: { type: 'string' },
-		tags: {
-			type: 'array',
-			items: { type: 'string' },
-		},
-	},
-	additionalProperties: false,
-} as const
-
-export type Product = FromSchema<typeof productSchema>
-
 //object
 export const categorySchema = {
 	$id: 'category',
@@ -189,7 +168,7 @@ export const getSpecificProductSchema: FastifySchema = {
 							type: 'integer',
 						},
 						featureImage: {
-							type: 'null',
+							type: 'string',
 						},
 						category: {
 							type: 'string',
@@ -220,6 +199,173 @@ export const getSpecificProductSchema: FastifySchema = {
 				error: { type: 'string' },
 			},
 			additionalProperties: false,
+		},
+	},
+}
+
+/* 
+	New try at individualized schemas for achieving DRY
+*/
+
+// Product
+export const productSchema = {
+	type: 'object',
+	required: ['product'],
+	properties: {
+		product: {
+			type: 'object',
+			required: ['id', 'title', 'price', 'category'],
+			properties: {
+				id: { type: 'integer' },
+				title: { type: 'string' },
+				description: { type: 'string' },
+				price: { type: 'integer' },
+				featureImage: { type: 'string' },
+				category: { type: 'string' },
+				tags: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							title: { type: 'string' },
+						},
+						additionalProperties: false,
+					},
+				},
+			},
+			additionalProperties: false,
+		},
+	},
+}
+
+//Products
+export const productsSchema = {
+	type: 'object',
+	required: ['products'],
+	properties: {
+		products: {
+			type: 'array',
+			items: {
+				type: 'object',
+				required: ['title', 'description', 'price', 'category'],
+				properties: {
+					id: { type: 'integer' },
+					title: { type: 'string' },
+					description: { type: 'string' },
+					price: { type: 'integer' },
+					featureImage: { type: 'string' },
+					category: { type: 'string' },
+					tags: {
+						type: 'array',
+						items: { type: 'string' },
+						additionalProperties: false,
+					},
+				},
+				additionalProperties: false,
+			},
+		},
+	},
+}
+
+//export type Product = FromSchema<typeof productSchema>
+
+/* export const productSchema = {
+	$id: 'product',
+	type: 'object',
+	required: ['title', 'description', 'price', 'category'],
+	properties: {
+		id: { type: 'integer' },
+		title: { type: 'string' },
+		description: { type: 'string' },
+		price: { type: 'integer' },
+		featureImage: { type: 'string' },
+		category: { type: 'string' },
+		tags: {
+			type: 'array',
+			items: { type: 'string' },
+		},
+	},
+	additionalProperties: false,
+} as const */
+
+//Tags related
+
+export const titleSchema = {
+	type: 'object',
+	required: ['title'],
+	properties: {
+		title: { type: 'string' },
+	},
+	additionalProperties: false,
+} as const
+
+export type Title = FromSchema<typeof titleSchema>
+
+export const getSpecificTagProductsSchema = {
+	type: 'object',
+	required: ['tag'],
+	properties: {
+		tag: {
+			type: 'object',
+			properties: {
+				title: { type: 'string' },
+				products: {
+					type: 'array',
+					items: {
+						type: 'object',
+						required: ['title', 'description', 'price', 'category'],
+						properties: {
+							id: { type: 'integer' },
+							title: { type: 'string' },
+							description: { type: 'string' },
+							price: { type: 'integer' },
+							featureImage: { type: 'string' },
+							category: { type: 'string' },
+							tags: {
+								type: 'array',
+								items: { type: 'string' },
+								additionalProperties: false,
+							},
+						},
+						additionalProperties: false,
+					},
+				},
+			},
+		},
+	},
+}
+
+// Total dublicate from tag
+export const getSpecificCategoryProductsSchema = {
+	type: 'object',
+	required: ['category'],
+	properties: {
+		category: {
+			type: 'object',
+			properties: {
+				title: { type: 'string' },
+				products: {
+					type: 'array',
+					items: {
+						type: 'object',
+						required: ['title', 'description', 'price', 'category'],
+						properties: {
+							id: { type: 'integer' },
+							title: { type: 'string' },
+							description: { type: 'string' },
+							price: { type: 'integer' },
+							featureImage: { type: 'string' },
+							category: { type: 'string' },
+							tags: {
+								type: 'array',
+								items: { type: 'string' },
+								additionalProperties: false,
+							},
+						},
+						additionalProperties: false,
+					},
+				},
+			},
 		},
 	},
 }

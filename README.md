@@ -27,7 +27,7 @@
  ## benchmarks criteria
   showcase normal queries used in the day to day, eg.
   - get all products
-  - get products, paginated
+  - get products, paginated => put on hold
   - get specific products
   - get products by tag
   - get products by category
@@ -35,6 +35,7 @@
   Possible additional
   - create product
   - edit product, eg. price, text
+  - Get the 5 or 10 first products from all Tags
   
 
 ## Included

@@ -25,5 +25,5 @@ model Category {
 
 model Tags {
   title String    @id @unique @db.VarChar(255)
-  tags  Product[]
+  products  Product[]
 }

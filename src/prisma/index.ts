@@ -4,7 +4,13 @@ import { FastifyInstance, RouteShorthandOptions } from 'fastify'
 
 import { ProductReply, productReplySchema, productsReplySchema, ProductsReply, ProductId, specificProductId, Error, errorSchema } from '../schema/product'
 
-import { getProductsSchema, getSpecificProductSchema } from '../schema/product'
+import { getProductsSchema, getSpecificProductSchema,getSpecificTagProductsSchema, getSpecificCategoryProductsSchema } from '../schema/product'
+
+// individual schema
+import { productSchema, productsSchema, titleSchema } from '../schema/product'
+
+//Types
+import { Title } from '../schema/product'
 
 export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 	const prisma = new PrismaClient()
@@ -39,7 +45,12 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 	fastify.get(
 		'/products',
 		{
-			schema: getProductsSchema,
+			schema: {
+				response: {
+					200: productsSchema,
+					404: errorSchema
+				},
+			},
 		},
 		async function (request, reply) {
 			try {
@@ -55,7 +66,13 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 	fastify.get<{ Params: ProductId; Reply: ProductReply | Error }>(
 		'/products/:id',
 		{
-			schema: getSpecificProductSchema
+			schema: {
+				params: specificProductId,
+				response: {
+					200: productSchema,
+					404: errorSchema,
+				},
+			},
 		},
 		async function (request, reply) {
 			try {
@@ -69,24 +86,51 @@ export const prismaRoutes = async function (fastify: FastifyInstance, opts) {
 		}
 	)
 
-	/*
-	//retrieve tags
-	fastify.route({
-		method: 'get',
-		url: '/products/tags',
-		schema: {
-			response: {
-				200: {
-					type: 'object',
-					properties: {
-						titel: { type: String },
-						products: { type: Array },
-					},
+	// Get Products from Tag
+	fastify.get<{ Params: Title }>(
+		'/products/tags/:title',
+		{
+			schema: {
+				params: titleSchema,
+				response: {
+					200: getSpecificTagProductsSchema,
+					404: errorSchema,
 				},
 			},
-		} as const,
-	})
-*/
+		},
+		async function (request, reply) {
+			try {
+				const { title } = request.params
+				const tag = await prisma.tags.findUnique({ where: { title: title }, include: { products: true } })
+				reply.code(200).send({tag})
+			} catch (error) {
+				reply.code(404).send({ error: 'Tag or products not found not found' })
+			}
+		}
+	)
+
+	// Get Products from Category
+	fastify.get<{ Params: Title }>(
+		'/products/category/:title',
+		{
+			schema: {
+				params: titleSchema,
+				response: {
+					200: getSpecificCategoryProductsSchema,
+					404: errorSchema,
+				},
+			},
+		},
+		async function (request, reply) {
+			try {
+				const { title } = request.params
+				const category = await prisma.category.findUnique({ where: { title: title }, include: { products: true } })
+				reply.code(200).send({category})
+			} catch (error) {
+				reply.code(404).send({ error: 'Tategory not found' })
+			}
+		}
+	)
 
 	/*
 //pagination
