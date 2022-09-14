@@ -3,6 +3,7 @@ version: '3.9'
 services: 
   db: 
     image: postgres:alpine
+    container_name: benchify-db
     restart: always
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -13,6 +14,7 @@ services:
 
   adminer:
     image: adminer
+    container_name: benchify-adminer
     restart: always
     ports:
       - 8080:8080
